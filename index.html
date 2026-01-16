@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>選擇日期</title>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <style>
+    body { font-family: sans-serif; padding: 20px; text-align: center; background-color: #f8f9fa; }
+    .card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    h2 { color: #005db9; margin-bottom: 20px; }
+    #datepicker { width: 100%; padding: 12px; font-size: 16px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+    .btn { background: #00B900; color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-size: 18px; margin-top: 25px; cursor: pointer; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>📅 選擇上課日期</h2>
+    <input type="text" id="datepicker" placeholder="請點選選擇日期">
+    <button class="btn" onclick="sendDate()">確認日期</button>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+  <script>
+    // 初始化月曆
+    const picker = flatpickr("#datepicker", {
+      minDate: "today",
+      dateFormat: "Y-m-d",
+      disable: [ (date) => (date.getDay() === 0 || date.getDay() === 6) ] // 排除週末
+    });
+
+    async function initLiff() {
+      await liff.init({ liffId: "2008893008-RbEYdanx" }); // 這裡請填入您的 LIFF ID
+      if (!liff.isLoggedIn()) {
+        liff.login();
+      }
+    }
+    initLiff();
+
+    function sendDate() {
+      const val = document.getElementById('datepicker').value;
+      if (!val) return alert("請選擇日期！");
+      
+      liff.sendMessages([{
+        type: 'text',
+        text: "日期選擇：" + val
+      }]).then(() => {
+        liff.closeWindow();
+      }).catch((err) => {
+        alert("傳送失敗，請確認 LIFF 權限");
+      });
+    }
+  </script>
+</body>
+</html>
